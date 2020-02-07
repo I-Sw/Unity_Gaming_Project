@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 public class CharacterMovement : MonoBehaviour
 {
+    Vector3 desired_direction;
     //Creates an object to store a connection to CameraControl
     CameraControl my_camera;
     //Creates an object to store a connection to Animator
@@ -50,52 +51,30 @@ public class CharacterMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //Sets is_walking to false by default
-        bool is_walking = false;
+        desired_direction = Vector3.zero;
 
-        //If leftShift is held increases movement speeed and changes current animation to running instead of walking
-        if (Input.GetKey(KeyCode.LeftShift))
+        if(isCharacterMoving())
         {
-            current_speed = base_speed + 1;
-            current_animation = "is_running";
-            //Toggle of particle system to use alongside teleport ability
-            
+            my_animation.SetBool(current_animation, true);
+            desired_direction = moveTo();
+
+            if (desired_direction.magnitude > 0.1f)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(desired_direction, Vector3.up), 0.1f);
+                transform.position += current_speed * transform.forward * Time.deltaTime;
+            }
         }
 
-        //Else sets movespeed to default and changes current animation to walking
         else
         {
-            current_speed = base_speed;
-            my_animation.SetBool("is_running", false);
-            current_animation = "is_walking";
-        }
-
-        if (should_walk_forward())
-        {
-            walk_forward();
-        }
-
-        if(should_walk_backwards())
-        {
-            walk_backwards();
-        }
-
-        if(should_turn_right())
-        {
-            turn_right();
-            walk_forward();
-        }
-
-        if(should_turn_left())
-        {
-            turn_left();
-            walk_forward();
+            my_animation.SetBool(current_animation, false);
         }
 
         if (should_disconnect_camera())
         {
             disconnect_camera();
         }
+
 
         //If teleport cooldown is below 2 (~2 seconds) adds time.deltaTime to the cooldown
         if (teleport_cooldown < 2)
@@ -152,57 +131,85 @@ public class CharacterMovement : MonoBehaviour
     //Returns true if any of WASD are pressed
     private bool isCharacterMoving()
     {
+        //If leftShift is held increases movement speeed and changes current animation to running instead of walking
+        if (Input.GetKey(KeyCode.LeftShift))
+        {
+            current_speed = base_speed + 1;
+            my_animation.SetBool("is_walking", false);
+            current_animation = "is_running";
+        }
+
+        //Else sets movespeed to default and changes current animation to walking
+        else
+        {
+            current_speed = base_speed;
+            my_animation.SetBool("is_running", false);
+            current_animation = "is_walking";
+        }
+
         if (Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D))
         {
-            my_animation.SetBool(current_animation, true);
             return true;
         }
             
         else
         {
-            my_animation.SetBool(current_animation, false);
             return false;
         }           
     }
 
-    private bool should_walk_forward()
+    private Vector3 moveTo()
     {
-        return Input.GetKey(KeyCode.W);
+        if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.A))
+            return ((turn_forward() + turn_left()).normalized);
+
+        if (Input.GetKey(KeyCode.W) && Input.GetKey(KeyCode.D))
+            return ((turn_forward() + turn_right()).normalized);
+
+        if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.A))
+            return ((turn_backwards() + turn_left()).normalized);
+
+        if (Input.GetKey(KeyCode.S) && Input.GetKey(KeyCode.D))
+            return ((turn_backwards() + turn_right()).normalized);
+
+        if (Input.GetKey(KeyCode.W))
+            return turn_forward();
+
+        if (Input.GetKey(KeyCode.A))
+            return turn_left();
+
+        if (Input.GetKey(KeyCode.S))
+            return turn_backwards();
+
+        if (Input.GetKey(KeyCode.D))
+            return turn_right();
+
+        return Vector3.zero;
     }
 
-    private void walk_forward()
+    private Vector3 turn_forward()
     {
-        transform.position += current_speed * transform.forward * Time.deltaTime;
+        Vector3 cam_forward= Camera.main.transform.forward;
+        return (new Vector3(cam_forward.x, 0, cam_forward.z)).normalized;
     }
 
-    private bool should_walk_backwards()
+    private Vector3 turn_backwards()
     {
-        return Input.GetKey(KeyCode.S);
+        Vector3 cam_back = -Camera.main.transform.forward;
+        return (new Vector3(cam_back.x, 0, cam_back.z)).normalized;
+        
     }
 
-    private void walk_backwards()
+    private Vector3 turn_left()
     {
-        transform.position += -current_speed * transform.forward * Time.deltaTime;
+        Vector3 cam_left = -Camera.main.transform.right;
+        return (new Vector3(cam_left.x, 0, cam_left.z)).normalized;
     }
 
-    private bool should_turn_left()
+    private Vector3 turn_right()
     {
-        return Input.GetKey(KeyCode.A);
-    }
-
-    private void turn_left()
-    {
-        transform.Rotate(Vector3.up, turning_speed * Time.deltaTime);
-    }
-
-    private bool should_turn_right()
-    {
-        return Input.GetKey(KeyCode.D);
-    }
-
-    private void turn_right()
-    {
-        transform.Rotate(Vector3.up, -turning_speed * Time.deltaTime);
+        Vector3 cam_right = Camera.main.transform.right;
+        return (new Vector3(cam_right.x, 0, cam_right.z)).normalized;
     }
 
     private bool should_disconnect_camera()
