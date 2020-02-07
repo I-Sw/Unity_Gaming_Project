@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class BasicEnemyControl : MonoBehaviour
 {
@@ -19,12 +20,17 @@ public class BasicEnemyControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        agent.destination = character.transform.position;
+
+        /*
         //Calls the discrete_direction method, passing in the vector between the enemy and charatcer
         Vector3 dir = discrete_direction(character.transform.position - transform.position);
         //Rotates the enemy in the direction provided above
         transform.rotation = Quaternion.LookRotation(dir);
         //Moves the enemy forward toward their new target
         transform.position += current_speed * transform.forward * Time.deltaTime;
+        */
     }
 
     Vector3 discrete_direction(Vector3 continuous_vector)
