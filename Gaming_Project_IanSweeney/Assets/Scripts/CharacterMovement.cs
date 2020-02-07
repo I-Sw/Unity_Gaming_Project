@@ -104,28 +104,6 @@ public class CharacterMovement : MonoBehaviour
         else if (teleport_cooldown >= 2)
             UI_Teleport.text = "Teleport: Ready";
 
-        /*Dash replaced by teleport when Lerp based camera movement introduced allowing for smooth camera movement with teleports
-         * 
-        //If dash_cooldown is less than 100, increment it by 1, allowing the Dash ability to recharge over time
-        if (dash_cooldown < 100)
-            dash_cooldown++;
-
-        //If space is pressed executes a dash, including particle effects
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            Debug.Log("Dash Cooldown" + dash_cooldown);
-            if (dash_cooldown == 100)
-            {
-                //Starts a Coroutine written below, which carries out a dash function
-                StartCoroutine(Dash(0.3f));
-                //Starts a Coroutine written below, which carries out a particle effect function
-                StartCoroutine(ParticleBurst(particles, 0.3f));
-                //Returns dash_cooldown to 0
-                dash_cooldown = 0;
-            }
-            
-        }*/
-
         //If right mouse is pressed executes a short range teleport, including particle effects
         if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Space))
         {
