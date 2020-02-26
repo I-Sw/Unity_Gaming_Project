@@ -20,8 +20,8 @@ public class BasicEnemyControl : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        NavMeshAgent agent = GetComponent<NavMeshAgent>();
-        agent.destination = character.transform.position;
+        //NavMeshAgent agent = GetComponent<NavMeshAgent>();
+        //agent.destination = character.transform.position;
 
         /*
         //Calls the discrete_direction method, passing in the vector between the enemy and charatcer

@@ -9,7 +9,7 @@ public class CameraControl : MonoBehaviour
     CharacterMovement character;
     //Creates int values which set the height and offset of the camera
     //This allows potential for camera zoom & movement
-    int camera_height = 3;
+    int camera_height = 5;
     int camera_offset = 4;
 
     // Start is called before the first frame update

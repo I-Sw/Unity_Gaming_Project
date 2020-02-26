@@ -18,7 +18,7 @@ public class CharacterMovement : MonoBehaviour
     Text UI_Teleport;
     Text UI_Upgrades;
     //Creates a Terrain object to store the game terrain
-    Terrain terrain;
+    //Terrain terrain;
     //Creates variables, to handle character movement
     private float current_speed = 2;
     private float base_speed = 2;
@@ -45,7 +45,7 @@ public class CharacterMovement : MonoBehaviour
         UI_Teleport = GameObject.Find("UI_Teleport").GetComponent<Text>();
         UI_Upgrades = GameObject.Find("UI_Upgrades").GetComponent<Text>();
         //Retrieves terrain object for use in this script
-        terrain = FindObjectOfType<Terrain>();
+        //terrain = FindObjectOfType<Terrain>();
     }
 
     // Update is called once per frame
@@ -93,7 +93,7 @@ public class CharacterMovement : MonoBehaviour
                 //Creates a tempPosition vector storing the x and z values of the intended teleport location
                 Vector3 tempPosition = transform.position + (teleport_distance * transform.forward);
                 //Samples the y coordinate height of the terrain, adding it onto the tempPosition vector
-                tempPosition.y = terrain.SampleHeight(tempPosition);
+                //tempPosition.y = terrain.SampleHeight(tempPosition);
                 //Moves the character to the new positions
                 transform.position = tempPosition;
                 //Starts a Coroutine written below, which carries out a particle effect function
