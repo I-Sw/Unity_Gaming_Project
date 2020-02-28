@@ -54,23 +54,25 @@ public class LevelGenerator : MonoBehaviour
         {
             createBlockAt(new Vector3(xDistance-15, 0, j));
         }
-
-        /*
-        for(int i = 0; i <= xDistance; i++)
-        {
-            createBlockAt(new Vector3(i - 16, 0, zStartPoint));
-        }
-
-        for(int z = xDistance; z > -16; z--)
-        {
-            createBlockAt(new Vector3(xDistance -16, 0, z));
-        }*/
     }
 
     //Takes a Vector3 location and Instantiates a stone block at that location
-    void createBlockAt(Vector3 position)
+    public void createBlockAt(Vector3 position)
     {
         GameObject blockObject = Instantiate(StoneBlock, position, Quaternion.identity);
         blockObject.transform.parent = GameObject.Find("Map_Walls").transform;
+    }
+
+    public void createRoomAt(Vector3 position)
+    {
+        for(int i = 0; i <= 10; i++)
+        {        
+            
+            for(int j = 0; j <= 10; j++)
+            {
+                createBlockAt(new Vector3(position.x + i, -1, position.z + j));
+            }
+        }
+
     }
 }
