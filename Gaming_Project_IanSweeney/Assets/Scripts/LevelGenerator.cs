@@ -75,4 +75,16 @@ public class LevelGenerator : MonoBehaviour
         }
 
     }
+
+    public void createCorridorAt(Vector3 position)
+    {
+        for (int i = 0; i <= 3; i++)
+        {
+
+            for (int j = 0; j <= 10; j++)
+            {
+                createBlockAt(new Vector3(position.x + i, -1, position.z + j));
+            }
+        }
+    }
 }
