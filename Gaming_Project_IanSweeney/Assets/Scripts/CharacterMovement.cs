@@ -2,35 +2,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class CharacterMovement : MonoBehaviour, Health
 {
     Vector3 desired_direction;
+    //Creates an object to store a connection to GameManager
+    GameManager gameManager;
     //Creates an object to store a connection to CameraControl
     CameraControl my_camera;
     //Creates an object to store a connection to Animator
     Animator my_animation;
     //Creates an object to store a connection to a ParticleSystem
     ParticleSystem particles;
-    //Creates Text objects to store UI text
-    Text UI_Health;
-    Text UI_Teleport;
-    Text UI_Upgrades;
     //Creates variables, to handle character movement
     private float current_speed = 2;
     private float base_speed = 2;
     private float turning_speed = 180;
     private float teleport_cooldown = 2;
-    private float teleport_distance = 3;
+    private float teleport_distance = 3f;
     //Creates a variable to store character health
-    private float charHP = 100;
+    public float maxHP;
+    private float charHP;
     //Creates a string value, which stores current animation, which is passed back to Animator to set animations
     private string current_animation;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Retrieves GameManager for use in this script
+        gameManager = FindObjectOfType<GameManager>();
         //Retrieves CameraControl for use in this script
         my_camera = FindObjectOfType<CameraControl>();
         //Retrieves Animator for use in this script
@@ -38,10 +38,10 @@ public class CharacterMovement : MonoBehaviour, Health
         //Retrieves ParticleSystem for use and ensures it is off
         particles = GameObject.Find("CharacterParticles").GetComponent<ParticleSystem>();
         particles.Stop();
-        //Retrieves UI text objects for use in this script
-        UI_Health = GameObject.Find("UI_Health").GetComponent<Text>();
-        UI_Teleport = GameObject.Find("UI_Teleport").GetComponent<Text>();
-        UI_Upgrades = GameObject.Find("UI_Upgrades").GetComponent<Text>();
+        //Sets HP values
+        maxHP = 100;
+        charHP = 100;
+
     }
 
     // Update is called once per frame
@@ -77,7 +77,7 @@ public class CharacterMovement : MonoBehaviour, Health
             teleport_cooldown += Time.deltaTime;
 
         else if (teleport_cooldown >= 2)
-            UI_Teleport.text = "Teleport: Ready";
+            gameManager.updateUI(true);
 
         //If right mouse is pressed executes a short range teleport, including particle effects
         if (Input.GetKeyDown(KeyCode.Mouse1) || Input.GetKeyDown(KeyCode.Space))
@@ -96,7 +96,7 @@ public class CharacterMovement : MonoBehaviour, Health
                 StartCoroutine(ParticleBurst(particles, 0.3f));
                 //Returns teleport cooldown to zero
                 teleport_cooldown = 0;
-                UI_Teleport.text = "Teleport: Waiting...";
+                gameManager.updateUI(false);
             }
         }
     }
@@ -219,26 +219,22 @@ public class CharacterMovement : MonoBehaviour, Health
     }
 
     //Handles on trigger collisions
+
     private void OnTriggerEnter(Collider other)
     {
         Debug.Log("trigger");
         //Based off of https://learn.unity.com/tutorial/collecting-scoring-and-building-the-game
         //Allows the player to pick up items with the PickUp tag, which currently handles a movement speed upgrade
-        if (other.tag == "PickUp")
+        if (other.gameObject.tag == "PickUp")
         {
-            if (other.name == "SpeedUpgrade")
-            {
-                base_speed = base_speed + 1;
-                UI_Upgrades.text += "Speed\n";
-            }
-
-            if (other.name == "TeleportUpgrade")
-            {
-                teleport_distance += 1;
-                UI_Upgrades.text += "Teleport\n";
-            }
-
-            other.gameObject.SetActive(false);
+            //Calls the upgradeCollected method of the game manager
+            //This reduces the upgrade count and checks to see if the maze has been completed
+            gameManager.upgradeCollected(other.name);
+            //Returns the Upgrade script attached to the collider
+            //These scripts use polymorphism to typecast to the Upgrade script for this means, allowing all three upgrade types to be applied
+            other.GetComponent<Upgrade>().applyUpgrade();
+            gameManager.updateUI(maxHP);
+            Destroy(other.gameObject);
         }
     }
 
@@ -255,10 +251,32 @@ public class CharacterMovement : MonoBehaviour, Health
     public void reduceHP(float reduction)
     {
         charHP -= reduction;
+        gameManager.updateUI(charHP);
+        if(charHP == 0)
+        {
+            gameManager.characterDied();
+            Time.timeScale = 0;
+        }
     }
 
     public void increaseHP(float increase)
     {
         charHP += increase;
+        gameManager.updateUI(charHP);
+    }
+
+    public void increaseMaxHP(float increase)
+    {
+        maxHP += increase;
+    }
+
+    public void increaseSpeed(float increase)
+    {
+        base_speed += increase;
+    }
+
+    public void increaseTeleport(float increase)
+    {
+        teleport_distance += increase;
     }
 }

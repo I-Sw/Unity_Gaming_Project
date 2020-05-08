@@ -7,16 +7,12 @@ public class V2_LevelGenerator : MonoBehaviour
 {
     string[,] levelArray = new string[7, 7];
     List<GameObject> roomArray = new List<GameObject>();
-    CharacterMovement player;
     System.Random random = new System.Random();
 
     // Start is called before the first frame update
     void Start()
     {
         levelArray[3, 3] = "1111";
-        player = FindObjectOfType<CharacterMovement>();
-        generateLevel();
-        //regenerateMaze();
     }
 
     // Update is called once per frame
@@ -27,11 +23,12 @@ public class V2_LevelGenerator : MonoBehaviour
 
     public void regenerateMaze()
     {
-        player.transform.position = new Vector3(36, 0.5f, 36);
         foreach (GameObject room in roomArray)
         {
             Destroy(room);
         }
+        System.Array.Clear(levelArray, 0, levelArray.Length);
+        generateLevel();
     }
 
     public void generateLevel()
