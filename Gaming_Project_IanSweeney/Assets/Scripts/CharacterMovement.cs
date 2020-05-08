@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CharacterMovement : MonoBehaviour
+public class CharacterMovement : MonoBehaviour, Health
 {
     Vector3 desired_direction;
     //Creates an object to store a connection to CameraControl
@@ -17,8 +17,6 @@ public class CharacterMovement : MonoBehaviour
     Text UI_Health;
     Text UI_Teleport;
     Text UI_Upgrades;
-    //Creates a Terrain object to store the game terrain
-    //Terrain terrain;
     //Creates variables, to handle character movement
     private float current_speed = 2;
     private float base_speed = 2;
@@ -44,8 +42,6 @@ public class CharacterMovement : MonoBehaviour
         UI_Health = GameObject.Find("UI_Health").GetComponent<Text>();
         UI_Teleport = GameObject.Find("UI_Teleport").GetComponent<Text>();
         UI_Upgrades = GameObject.Find("UI_Upgrades").GetComponent<Text>();
-        //Retrieves terrain object for use in this script
-        //terrain = FindObjectOfType<Terrain>();
     }
 
     // Update is called once per frame
@@ -244,5 +240,25 @@ public class CharacterMovement : MonoBehaviour
 
             other.gameObject.SetActive(false);
         }
+    }
+
+    public void setHP(float HP)
+    {
+        charHP = HP;
+    }
+
+    public float getHP()
+    {
+        return charHP;
+    }
+
+    public void reduceHP(float reduction)
+    {
+        charHP -= reduction;
+    }
+
+    public void increaseHP(float increase)
+    {
+        charHP += increase;
     }
 }

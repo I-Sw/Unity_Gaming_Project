@@ -63,6 +63,14 @@ public class LevelGenerator : MonoBehaviour
         blockObject.transform.parent = GameObject.Find("Map_Walls").transform;
     }
 
+    public void snapBlockAt(Vector3 position)
+    {
+        Vector3 spawnPos = new Vector3(position.x, position.y + 3, position.z);
+        GameObject blockObject = Instantiate(StoneBlock, spawnPos, Quaternion.identity);
+        blockObject.transform.position = Vector3.Lerp(blockObject.transform.position, position, .1f);
+        //blockObject.transform.parent = GameObject.Find("Map_Walls").transform;
+    }
+
     public void createRoomAt(Vector3 position)
     {
         for(int i = 0; i <= 10; i++)
